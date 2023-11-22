@@ -1,0 +1,111 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #movie-recommendation {
+            max-width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #search-input, #search-button {
+            margin-bottom: 20px;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        #movies-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .movie {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .movie:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+<div id="movie-recommendation">
+    <h1>Movie Recommendation System</h1>
+
+    <form id="search-form">
+        <label for="search-input">Enter a Movie:</label>
+        <input type="text" id="search-input" name="movie" placeholder="Type a movie title" required>
+
+        <button type="button" id="search-button" onclick="searchMovies()">Search</button>
+    </form>
+
+    <ul id="movies-list"></ul>
+</div>
+
+<script>
+    function searchMovies() {
+        const searchInput = document.getElementById('search-input').value;
+
+        // Make an AJAX request to the Flask backend
+        fetch('/recommend', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `movie=${encodeURIComponent(searchInput)}`,
+        })
+        .then(response => response.json())
+        .then(data => {
+            displayMovies(data.movies);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function displayMovies(movies) {
+        const moviesList = document.getElementById('movies-list');
+
+        // Clear existing movie list
+        moviesList.innerHTML = '';
+
+        // Populate the movie list
+        movies.forEach(movie => {
+            const li = document.createElement('li');
+            li.classList.add('movie');
+            li.textContent = movie;
+            moviesList.appendChild(li);
+        });
+    }
+</script>
+
+</body>
+</html>
